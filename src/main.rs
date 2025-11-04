@@ -6,7 +6,6 @@ use crossterm::{
 };
 use ratatui::{
     backend::CrosstermBackend,
-    layout::{Constraint, Layout},
     style::Style,
     widgets::{Block, Borders},
     Terminal,
@@ -35,14 +34,11 @@ fn main() -> Result<()> {
     loop {
         // Draw UI
         terminal.draw(|f| {
-            let chunks = Layout::default()
-                .constraints([Constraint::Percentage(100)])
-                .split(f.area());
-            f.render_widget(&textarea, chunks[0]);
+            f.render_widget(&textarea, f.area());
         })?;
 
         // Handle events
-        if event::poll(std::time::Duration::from_millis(100))? {
+        if event::poll(std::time::Duration::from_millis(250))? {
             if let Event::Key(key) = event::read()? {
                 // ESC to exit
                 if key.code == KeyCode::Esc {
