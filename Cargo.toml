@@ -1,0 +1,28 @@
+[package]
+name = "cat-edit-mml"
+version = "0.1.0"
+edition = "2021"
+authors = ["cat2151"]
+license = "MIT"
+description = "TUI Editor for Music Macro Language (MML)"
+
+[dependencies]
+# TUI dependencies
+ratatui = "0.29"
+tui-textarea = "0.7"
+crossterm = "0.28"
+
+# Additional dependencies
+anyhow = "1.0"
+
+# Optional MML playback dependencies (same as cat-play-mml)
+# Uncomment to enable audio playback feature
+# mmlabc-to-smf = { git = "https://github.com/cat2151/mmlabc-to-smf-rust", optional = true }
+# smf-to-ym2151log-rust = { git = "https://github.com/cat2151/smf-to-ym2151log-rust", optional = true }
+# ym2151-log-player-rust = { git = "https://github.com/cat2151/ym2151-log-player-rust", features = ["realtime-audio"], optional = true }
+# serde_json = { version = "1.0", optional = true }
+
+[features]
+# Feature flag for audio playback
+# audio = ["mmlabc-to-smf", "smf-to-ym2151log-rust", "ym2151-log-player-rust", "serde_json"]
+default = []
