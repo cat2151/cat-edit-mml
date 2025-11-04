@@ -1,0 +1,28 @@
+┌MML Editor - Press ESC to exit──────────────────────────────────────────┐
+│T120 L4 O4                                                               │
+│C D E F G A B > C                                                        │
+│< G E C                                                                  │
+│                                                                         │
+│; This is a comment                                                      │
+│T90 L8                                                                   │
+│C C G G A A G2                                                           │
+│F F E E D D C2                                                           │
+│█                                                                        │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Legend:
+█ = Cursor position
+Lines 1-8 show example MML content
+The editor supports full cursor movement with arrow keys
+ESC key exits the application
