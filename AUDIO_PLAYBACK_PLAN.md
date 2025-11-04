@@ -1,16 +1,16 @@
-# Audio Playback Implementation Plan
+# オーディオ再生実装計画
 
-## Overview
-This document outlines the plan to integrate real-time MML (Music Macro Language) playback into the cat-edit-mml TUI editor, similar to the functionality in cat-play-mml.
+## 概要
+このドキュメントは、cat-play-mmlの機能と同様に、cat-edit-mml TUIエディタにリアルタイムMML（Music Macro Language）再生を統合する計画を概説します。
 
-## Current Status
-- ✅ Basic TUI editor implemented with ratatui, tui-textarea, and crossterm
-- ✅ Multi-line text input and cursor movement working
-- ✅ ESC key exits the application
-- ⏳ Audio playback feature pending
+## 現在の状況
+- ✅ ratatui、tui-textarea、crosstermを使用した基本的なTUIエディタの実装完了
+- ✅ 複数行テキスト入力とカーソル移動が動作
+- ✅ ESCキーでアプリケーション終了
+- ⏳ オーディオ再生機能は保留中
 
-## Dependencies Required
-The following crates from cat-play-mml need to be integrated:
+## 必要な依存関係
+cat-play-mmlから以下のクレートを統合する必要があります：
 
 ```toml
 mmlabc-to-smf = { git = "https://github.com/cat2151/mmlabc-to-smf-rust" }
@@ -19,56 +19,56 @@ ym2151-log-player-rust = { git = "https://github.com/cat2151/ym2151-log-player-r
 serde_json = "1.0"
 ```
 
-## Implementation Strategy
+## 実装戦略
 
-### Phase 1: Audio System Integration
-1. **Add audio dependencies** to Cargo.toml (commented out for now due to platform-specific requirements)
-2. **Create audio module** (`src/audio.rs`) with:
-   - MML to audio conversion pipeline
-   - Background audio playback thread management
-   - Graceful error handling for audio initialization failures
+### フェーズ1: オーディオシステムの統合
+1. **オーディオ依存関係の追加** - Cargo.tomlへ（プラットフォーム固有の要件により現在はコメントアウト）
+2. **オーディオモジュールの作成** (`src/audio.rs`)に以下を含む：
+   - MMLからオーディオへの変換パイプライン
+   - バックグラウンドオーディオ再生スレッド管理
+   - オーディオ初期化失敗時の適切なエラー処理
 
-### Phase 2: Editor Integration
-1. **Debounced Playback Trigger**
-   - Add timer to prevent playback on every keystroke
-   - Trigger playback after 500-1000ms of idle time after editing
-   - Cancel ongoing playback when new edits occur
+### フェーズ2: エディタ統合
+1. **デバウンス付き再生トリガー**
+   - キーストロークごとの再生を防ぐタイマーを追加
+   - 編集後500-1000msのアイドル時間後に再生をトリガー
+   - 新しい編集が発生したら進行中の再生をキャンセル
 
-2. **Background Audio Thread**
-   - Spawn separate thread for audio processing
-   - Use channels (mpsc) to communicate between editor and audio thread
-   - Send edited MML content to audio thread for processing
+2. **バックグラウンドオーディオスレッド**
+   - オーディオ処理用の個別スレッドを生成
+   - エディタとオーディオスレッド間の通信にチャネル（mpsc）を使用
+   - 編集されたMMLコンテンツをオーディオスレッドに送信して処理
 
-3. **UI Status Indicator**
-   - Show playback status in the editor border title
-   - Display errors if MML parsing or playback fails
-   - Show current playback state (idle, playing, error)
+3. **UIステータスインジケータ**
+   - エディタの枠線タイトルに再生ステータスを表示
+   - MML解析または再生が失敗した場合はエラーを表示
+   - 現在の再生状態を表示（アイドル、再生中、エラー）
 
-### Phase 3: Error Handling
-1. **Graceful Degradation**
-   - Continue operating as text editor if audio initialization fails
-   - Show warning message about audio unavailability
-   - Log audio errors to stderr without crashing
+### フェーズ3: エラー処理
+1. **グレースフルデグラデーション**
+   - オーディオ初期化が失敗してもテキストエディタとして動作を継続
+   - オーディオ利用不可についての警告メッセージを表示
+   - クラッシュせずにオーディオエラーをstderrにログ
 
-2. **MML Validation**
-   - Catch parsing errors from mmlabc-to-smf
-   - Display error messages in the UI
-   - Continue allowing editing even with invalid MML
+2. **MML検証**
+   - mmlabc-to-smfからの解析エラーをキャッチ
+   - UIにエラーメッセージを表示
+   - 無効なMMLでも編集を継続可能に
 
-## Code Structure
+## コード構造
 
-### Proposed File Structure
+### 提案されるファイル構造
 ```
 src/
-├── main.rs          # Main entry point and event loop
-├── audio.rs         # Audio playback module
-├── editor.rs        # Editor state and UI (optional refactor)
-└── config.rs        # Configuration (debounce time, etc.)
+├── main.rs          # メインエントリポイントとイベントループ
+├── audio.rs         # オーディオ再生モジュール
+├── editor.rs        # エディタの状態とUI（オプションのリファクタ）
+└── config.rs        # 設定（デバウンス時間など）
 ```
 
-### Key Components
+### 主要コンポーネント
 
-#### Audio Module (`src/audio.rs`)
+#### オーディオモジュール (`src/audio.rs`)
 ```rust
 pub struct AudioSystem {
     sender: mpsc::Sender<AudioCommand>,
@@ -76,7 +76,7 @@ pub struct AudioSystem {
 }
 
 pub enum AudioCommand {
-    Play(String),  // MML content to play
+    Play(String),  // 再生するMMLコンテンツ
     Stop,
     Shutdown,
 }
@@ -88,10 +88,10 @@ impl AudioSystem {
 }
 ```
 
-#### Main Event Loop Integration
+#### メインイベントループ統合
 ```rust
-// Pseudo-code for main.rs
-let mut audio_system = AudioSystem::new().ok(); // Optional audio
+// main.rsの疑似コード
+let mut audio_system = AudioSystem::new().ok(); // オプションのオーディオ
 let mut last_edit_time = Instant::now();
 let mut last_content = String::new();
 
@@ -108,7 +108,7 @@ loop {
         }
     }
     
-    // Debounced playback trigger
+    // デバウンス付き再生トリガー
     if last_edit_time.elapsed() > Duration::from_millis(500) {
         let content = textarea.lines().join("\n");
         if content != last_content {
@@ -121,106 +121,106 @@ loop {
 }
 ```
 
-## Platform Considerations
+## プラットフォーム考慮事項
 
-### Windows (Target Platform)
-- Uses WASAPI backend via cpal
-- Should work without additional system dependencies
-- Test on Windows before final deployment
+### Windows（対象プラットフォーム）
+- cpal経由でWASAPIバックエンドを使用
+- 追加のシステム依存関係なしで動作するはず
+- 最終デプロイ前にWindowsでテスト
 
-### Linux (Development)
-- Requires ALSA development libraries (`libalsa-dev` package)
-- May need additional audio system dependencies
-- Use feature flags to make audio optional during development
+### Linux（開発環境）
+- ALSA開発ライブラリ（`libalsa-dev`パッケージ）が必要
+- 追加のオーディオシステム依存関係が必要な場合あり
+- 開発中はオーディオをオプションにするためにfeatureフラグを使用
 
 ### macOS
-- Uses CoreAudio backend via cpal
-- Should work without additional dependencies
+- cpal経由でCoreAudioバックエンドを使用
+- 追加の依存関係なしで動作するはず
 
-## Testing Plan
+## テスト計画
 
-1. **Unit Tests**
-   - Test MML parsing with valid/invalid input
-   - Test audio command channel communication
-   - Test debounce logic
+1. **ユニットテスト**
+   - 有効/無効な入力でMML解析をテスト
+   - オーディオコマンドチャネル通信をテスト
+   - デバウンスロジックをテスト
 
-2. **Integration Tests**
-   - Test full MML → audio pipeline
-   - Test graceful degradation without audio
-   - Test editor continues working if audio fails
+2. **統合テスト**
+   - 完全なMML→オーディオパイプラインをテスト
+   - オーディオなしでのグレースフルデグラデーションをテスト
+   - オーディオ失敗時もエディタが動作し続けることをテスト
 
-3. **Manual Testing**
-   - Test on Windows target platform
-   - Test with various MML snippets
-   - Test performance with large MML files
-   - Test rapid editing behavior
+3. **手動テスト**
+   - Windows対象プラットフォームでテスト
+   - 様々なMMLスニペットでテスト
+   - 大きなMMLファイルでのパフォーマンステスト
+   - 高速編集動作のテスト
 
-## Performance Considerations
+## パフォーマンス考慮事項
 
-1. **Memory Usage**
-   - Limit audio buffer size
-   - Clean up previous playback before starting new one
-   - Consider streaming for large MML files
+1. **メモリ使用量**
+   - オーディオバッファサイズを制限
+   - 新しい再生を開始する前に前の再生をクリーンアップ
+   - 大きなMMLファイルにはストリーミングを検討
 
-2. **CPU Usage**
-   - Run audio processing in separate thread
-   - Use debouncing to avoid excessive processing
-   - Consider limiting playback duration for testing
+2. **CPU使用率**
+   - オーディオ処理を別スレッドで実行
+   - デバウンスを使用して過剰な処理を回避
+   - テスト用に再生時間の制限を検討
 
-3. **Responsiveness**
-   - Ensure UI remains responsive during playback
-   - Allow playback cancellation
-   - Don't block on audio operations
+3. **応答性**
+   - 再生中もUIが応答性を維持することを確保
+   - 再生キャンセルを許可
+   - オーディオ操作でブロックしない
 
-## Alternative Approaches
+## 代替アプローチ
 
-If real-time playback proves too complex:
+リアルタイム再生が複雑すぎる場合：
 
-1. **Save and Play Mode**
-   - Add command to save and play current content
-   - Use external player (like cat-play-mml binary)
-   - Simpler integration, less real-time
+1. **保存して再生モード**
+   - 現在のコンテンツを保存して再生するコマンドを追加
+   - 外部プレイヤー（cat-play-mmlバイナリなど）を使用
+   - よりシンプルな統合、リアルタイム性は低い
 
-2. **Preview Mode**
-   - Add mode toggle (edit/preview)
-   - Only play in preview mode
-   - Clearer separation of concerns
+2. **プレビューモード**
+   - モード切り替え（編集/プレビュー）を追加
+   - プレビューモードでのみ再生
+   - 関心事の明確な分離
 
-3. **Syntax Validation Only**
-   - Just validate MML syntax
-   - Show errors but don't play
-   - Focus on editor quality
+3. **構文検証のみ**
+   - MML構文の検証のみ
+   - エラーは表示するが再生しない
+   - エディタの品質に焦点
 
-## Timeline Estimate
+## タイムライン見積もり
 
-- Phase 1 (Audio Integration): 4-8 hours
-- Phase 2 (Editor Integration): 4-6 hours
-- Phase 3 (Error Handling): 2-4 hours
-- Testing and Refinement: 4-6 hours
+- フェーズ1（オーディオ統合）：4-8時間
+- フェーズ2（エディタ統合）：4-6時間
+- フェーズ3（エラー処理）：2-4時間
+- テストと改良：4-6時間
 
-**Total**: 14-24 hours of development time
+**合計**: 14-24時間の開発時間
 
-## Dependencies and Blockers
+## 依存関係とブロッカー
 
-- **Windows testing environment**: Need access to Windows for final testing
-- **Audio hardware**: Requires working audio output on target system
-- **Platform libraries**: ALSA on Linux, WASAPI on Windows
-- **Git dependencies**: Network access to download cat-play-mml crates
+- **Windowsテスト環境**: 最終テスト用のWindowsへのアクセスが必要
+- **オーディオハードウェア**: 対象システムで動作するオーディオ出力が必要
+- **プラットフォームライブラリ**: LinuxではALSA、WindowsではWASAPI
+- **Git依存関係**: cat-play-mmlクレートをダウンロードするためのネットワークアクセス
 
-## Success Criteria
+## 成功基準
 
-✅ Editor starts successfully with or without audio support
-✅ Multi-line editing works smoothly
-✅ Audio plays automatically after editing (with debounce)
-✅ Errors are handled gracefully
-✅ Performance is acceptable (no lag during typing)
-✅ Works on Windows target platform
+✅ オーディオサポートの有無にかかわらずエディタが正常に起動
+✅ 複数行編集がスムーズに動作
+✅ 編集後に自動的にオーディオが再生される（デバウンス付き）
+✅ エラーが適切に処理される
+✅ パフォーマンスが許容範囲（入力中のラグなし）
+✅ Windows対象プラットフォームで動作
 
-## Next Steps
+## 次のステップ
 
-1. Enable audio feature flag in Cargo.toml
-2. Implement audio module with basic playback
-3. Add debouncing logic to main event loop
-4. Test on Linux development environment
-5. Test on Windows target environment
-6. Refine based on performance and usability feedback
+1. Cargo.tomlでオーディオfeatureフラグを有効化
+2. 基本的な再生機能を持つオーディオモジュールを実装
+3. メインイベントループにデバウンスロジックを追加
+4. Linux開発環境でテスト
+5. Windows対象環境でテスト
+6. パフォーマンスと使いやすさのフィードバックに基づいて改良

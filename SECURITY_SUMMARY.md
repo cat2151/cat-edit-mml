@@ -1,76 +1,76 @@
-# Security Summary
+# セキュリティサマリー
 
-## Security Analysis Complete ✅
+## セキュリティ分析完了 ✅
 
-**Date**: 2025-11-04
-**CodeQL Analysis**: PASSED
-**Result**: 0 security vulnerabilities found
+**日付**: 2025-11-04
+**CodeQL分析**: 合格
+**結果**: セキュリティ脆弱性0件
 
-## Analysis Details
+## 分析詳細
 
-### Code Scanning
-- **Tool**: CodeQL (Rust)
-- **Scan Result**: No alerts
-- **Vulnerabilities Found**: 0
+### コードスキャン
+- **ツール**: CodeQL (Rust)
+- **スキャン結果**: アラートなし
+- **発見された脆弱性**: 0
 
-### Dependency Security
+### 依存関係セキュリティ
 
-All dependencies are from trusted sources:
+すべての依存関係は信頼できるソースから：
 
-1. **ratatui 0.29** - Official TUI framework, actively maintained
-2. **tui-textarea 0.7** - Mature text editing widget, actively maintained  
-3. **crossterm 0.28** - Cross-platform terminal library, widely used
-4. **anyhow 1.0** - Standard error handling library
+1. **ratatui 0.29** - 公式TUIフレームワーク、積極的にメンテナンス
+2. **tui-textarea 0.7** - 成熟したテキスト編集ウィジェット、積極的にメンテナンス
+3. **crossterm 0.28** - クロスプラットフォームターミナルライブラリ、広く使用
+4. **anyhow 1.0** - 標準エラー処理ライブラリ
 
-### Code Quality
+### コード品質
 
-- No unsafe code blocks
-- Proper error handling with Result types
-- Clean terminal cleanup in all code paths
-- No external network access
-- No file system access (read/write)
-- No dynamic code execution
+- unsafe コードブロックなし
+- Result型による適切なエラー処理
+- すべてのコードパスでクリーンなターミナルクリーンアップ
+- 外部ネットワークアクセスなし
+- ファイルシステムアクセス（読み書き）なし
+- 動的コード実行なし
 
-### Platform Security
+### プラットフォームセキュリティ
 
 **Windows**:
-- Uses Windows Console API (conhost.exe)
-- No elevated privileges required
-- Sandboxed terminal operations
+- Windows Console API (conhost.exe)を使用
+- 昇格された権限は不要
+- サンドボックス化されたターミナル操作
 
 **Linux**:
-- Standard terminal operations
-- No root privileges required
-- PTY/TTY operations only
+- 標準的なターミナル操作
+- root権限は不要
+- PTY/TTY操作のみ
 
 **macOS**:
-- Standard terminal operations  
-- No elevated privileges required
+- 標準的なターミナル操作
+- 昇格された権限は不要
 
-## Risk Assessment
+## リスク評価
 
-**Overall Risk Level**: LOW
+**総合リスクレベル**: 低
 
-- ✅ No identified security vulnerabilities
-- ✅ No unsafe code
-- ✅ Minimal attack surface (terminal I/O only)
-- ✅ Trusted dependencies
-- ✅ No network operations
-- ✅ No file system operations
-- ✅ No privilege escalation
+- ✅ 特定されたセキュリティ脆弱性なし
+- ✅ unsafeコードなし
+- ✅ 最小限の攻撃対象領域（ターミナルI/Oのみ）
+- ✅ 信頼できる依存関係
+- ✅ ネットワーク操作なし
+- ✅ ファイルシステム操作なし
+- ✅ 権限昇格なし
 
-## Recommendations
+## 推奨事項
 
-1. ✅ Current implementation is secure for production use
-2. ⚠️ When adding audio playback (future):
-   - Validate MML input to prevent parsing exploits
-   - Limit audio buffer sizes to prevent memory exhaustion
-   - Handle audio device errors gracefully
-3. ⚠️ When adding file I/O (future):
-   - Validate file paths to prevent directory traversal
-   - Implement file size limits
-   - Handle permission errors gracefully
+1. ✅ 現在の実装は本番環境で安全に使用可能
+2. ⚠️ オーディオ再生を追加する際（将来）：
+   - 解析の悪用を防ぐためにMML入力を検証
+   - メモリ枯渇を防ぐためにオーディオバッファサイズを制限
+   - オーディオデバイスエラーを適切に処理
+3. ⚠️ ファイルI/Oを追加する際（将来）：
+   - ディレクトリトラバーサルを防ぐためにファイルパスを検証
+   - ファイルサイズ制限を実装
+   - 権限エラーを適切に処理
 
-## Conclusion
+## 結論
 
-The current implementation has passed all security checks and is safe for production use. The minimal feature set (text editing only) provides a small attack surface. Future additions (audio, file I/O) should follow the recommendations above.
+現在の実装はすべてのセキュリティチェックに合格しており、本番環境での使用に安全です。最小限の機能セット（テキスト編集のみ）により、小さな攻撃対象領域を提供します。将来の追加機能（オーディオ、ファイルI/O）は上記の推奨事項に従う必要があります。

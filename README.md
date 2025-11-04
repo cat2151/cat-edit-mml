@@ -1,30 +1,30 @@
 # cat-edit-mml
 
-A TUI (Text User Interface) editor for Music Macro Language (MML), built with Rust.
+Rustで構築されたMusic Macro Language (MML)用のTUI（テキストユーザーインターフェース）エディタです。
 
-## Features
+## 機能
 
-- ✅ Multi-line text editor with syntax highlighting support
-- ✅ Full cursor movement (arrow keys, Home, End, Page Up/Down)
-- ✅ Standard text editing operations (insert, delete, backspace)
-- ✅ Cross-platform support (Windows, Linux, macOS)
-- ✅ ESC key to exit
-- ⏳ Real-time MML playback (planned - see [AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md))
+- ✅ シンタックスハイライト対応の複数行テキストエディタ
+- ✅ 完全なカーソル移動（矢印キー、Home、End、Page Up/Down）
+- ✅ 標準的なテキスト編集操作（挿入、削除、バックスペース）
+- ✅ クロスプラットフォーム対応（Windows、Linux、macOS）
+- ✅ ESCキーで終了
+- ⏳ リアルタイムMML再生（計画中 - [AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md)を参照）
 
-## Built With
+## 使用技術
 
-- [ratatui](https://github.com/ratatui-org/ratatui) - TUI framework
-- [tui-textarea](https://github.com/rhysd/tui-textarea) - Multi-line text input widget
-- [crossterm](https://github.com/crossterm-rs/crossterm) - Cross-platform terminal manipulation
+- [ratatui](https://github.com/ratatui-org/ratatui) - TUIフレームワーク
+- [tui-textarea](https://github.com/rhysd/tui-textarea) - 複数行テキスト入力ウィジェット
+- [crossterm](https://github.com/crossterm-rs/crossterm) - クロスプラットフォーム端末操作
 
-## Installation
+## インストール
 
-### Prerequisites
+### 前提条件
 
-- Rust 1.70 or later
-- Cargo (comes with Rust)
+- Rust 1.70以降
+- Cargo（Rustに付属）
 
-### Building from Source
+### ソースからのビルド
 
 ```bash
 git clone https://github.com/cat2151/cat-edit-mml.git
@@ -32,48 +32,48 @@ cd cat-edit-mml
 cargo build --release
 ```
 
-The binary will be available at `target/release/cat-edit-mml`
+バイナリは`target/release/cat-edit-mml`に生成されます
 
-## Usage
+## 使用方法
 
-Run the editor:
+エディタを実行：
 
 ```bash
 cargo run
 ```
 
-Or run the compiled binary:
+またはコンパイル済みバイナリを実行：
 
 ```bash
 ./target/release/cat-edit-mml
 ```
 
-### Keyboard Controls
+### キーボード操作
 
-- **Arrow Keys**: Move cursor
-- **Home/End**: Jump to start/end of line
-- **Page Up/Down**: Scroll through document
-- **Enter**: New line
-- **Backspace**: Delete character before cursor
-- **Delete**: Delete character at cursor
-- **ESC**: Exit editor
+- **矢印キー**: カーソル移動
+- **Home/End**: 行の先頭/末尾へジャンプ
+- **Page Up/Down**: ドキュメントをスクロール
+- **Enter**: 改行
+- **Backspace**: カーソル前の文字を削除
+- **Delete**: カーソル位置の文字を削除
+- **ESC**: エディタを終了
 
-## Related Projects
+## 関連プロジェクト
 
-- [cat-play-mml](https://github.com/cat2151/cat-play-mml) - MML parser and audio player
-- [mmlabc-to-smf-rust](https://github.com/cat2151/mmlabc-to-smf-rust) - MML to MIDI converter
-- [smf-to-ym2151log-rust](https://github.com/cat2151/smf-to-ym2151log-rust) - MIDI to YM2151 log converter
-- [ym2151-log-player-rust](https://github.com/cat2151/ym2151-log-player-rust) - YM2151 audio player
+- [cat-play-mml](https://github.com/cat2151/cat-play-mml) - MMLパーサーとオーディオプレイヤー
+- [mmlabc-to-smf-rust](https://github.com/cat2151/mmlabc-to-smf-rust) - MMLからMIDIへのコンバーター
+- [smf-to-ym2151log-rust](https://github.com/cat2151/smf-to-ym2151log-rust) - MIDIからYM2151ログへのコンバーター
+- [ym2151-log-player-rust](https://github.com/cat2151/ym2151-log-player-rust) - YM2151オーディオプレイヤー
 
-## Development
+## 開発
 
-### Running Tests
+### テストの実行
 
 ```bash
 cargo test
 ```
 
-### Building for Different Platforms
+### 各プラットフォーム向けのビルド
 
 **Windows:**
 ```bash
@@ -90,14 +90,14 @@ cargo build --release --target x86_64-unknown-linux-gnu
 cargo build --release --target x86_64-apple-darwin
 ```
 
-## Future Development
+## 今後の開発
 
-See [AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md) for planned audio playback features.
+計画中のオーディオ再生機能については[AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md)を参照してください。
 
-## License
+## ライセンス
 
-MIT License - see [LICENSE](LICENSE) file for details
+MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照してください
 
-## Author
+## 作者
 
 cat2151

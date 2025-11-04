@@ -1,79 +1,79 @@
-# Demo Guide for cat-edit-mml
+# cat-edit-mml デモガイド
 
-## Quick Start
+## クイックスタート
 
 ```bash
 cargo run
 ```
 
-## Expected Behavior
+## 期待される動作
 
-When you run the editor, you'll see:
-- A full-screen terminal interface
-- A bordered window with title "MML Editor - Press ESC to exit"
-- A text cursor ready for input
+エディタを実行すると、以下が表示されます：
+- フルスクリーンのターミナルインターフェース
+- 「MML Editor - Press ESC to exit」というタイトルの枠線付きウィンドウ
+- 入力可能なテキストカーソル
 
-## Features Demonstration
+## 機能デモンストレーション
 
-### 1. Multi-line Text Input
-- Type any text
-- Press Enter to create new lines
-- The cursor follows your input
+### 1. 複数行テキスト入力
+- 任意のテキストを入力
+- Enterキーで新しい行を作成
+- カーソルは入力に追従
 
-### 2. Cursor Movement
-- **Arrow Keys** (←↑↓→): Move cursor in any direction
-- **Home**: Jump to beginning of current line
-- **End**: Jump to end of current line
-- **Page Up**: Scroll up one page
-- **Page Down**: Scroll down one page
+### 2. カーソル移動
+- **矢印キー** (←↑↓→): 任意の方向にカーソルを移動
+- **Home**: 現在行の先頭へジャンプ
+- **End**: 現在行の末尾へジャンプ
+- **Page Up**: 1ページ上にスクロール
+- **Page Down**: 1ページ下にスクロール
 
-### 3. Text Editing
-- **Backspace**: Delete character before cursor
-- **Delete**: Delete character at cursor
-- **Ctrl+H**: Alternative backspace
-- **Any character**: Insert at cursor position
+### 3. テキスト編集
+- **Backspace**: カーソル前の文字を削除
+- **Delete**: カーソル位置の文字を削除
+- **Ctrl+H**: バックスペースの代替
+- **任意の文字**: カーソル位置に挿入
 
-### 4. Exit
-- **ESC**: Exit the editor and return to shell
+### 4. 終了
+- **ESC**: エディタを終了してシェルに戻る
 
-## Example MML Content to Try
+## 試せるMMLコンテンツの例
 
-Once the audio playback is implemented (see AUDIO_PLAYBACK_PLAN.md), you can try editing MML like:
+オーディオ再生が実装されたら（AUDIO_PLAYBACK_PLAN.mdを参照）、次のようなMMLを編集できます：
 
 ```
 C D E F G A B
 ```
 
-or
+または
 
 ```
 T120 L4 O4
 C E G > C < G E C
 ```
 
-## Technical Details
+## 技術詳細
 
-The editor is built using:
-- **ratatui 0.29**: For the TUI framework
-- **tui-textarea 0.7**: For multi-line text editing
-- **crossterm 0.28**: For cross-platform terminal handling
+このエディタは以下を使用して構築されています：
+- **ratatui 0.29**: TUIフレームワーク用
+- **tui-textarea 0.7**: 複数行テキスト編集用
+- **crossterm 0.28**: クロスプラットフォーム端末処理用
 
-The implementation is in `src/main.rs` and is approximately 60 lines of code.
+実装は`src/main.rs`にあり、約60行のコードです。
 
-## Known Limitations
+## 既知の制限事項
 
-- No file I/O yet (planned for future)
-- No syntax highlighting (could be added)
-- No audio playback (see AUDIO_PLAYBACK_PLAN.md)
-- No save/load functionality
+- ファイルI/O機能なし（将来計画）
+- シンタックスハイライトなし（追加可能）
+- オーディオ再生なし（AUDIO_PLAYBACK_PLAN.mdを参照）
+- 保存/読込機能なし
 
-## Performance
+## パフォーマンス
 
-The editor is lightweight and responsive:
-- Binary size: ~1.1 MB (release build)
-- Memory usage: < 5 MB
-- CPU usage: Minimal (event-driven)
+エディタは軽量で応答性が高い：
+- バイナリサイズ: 約1.1 MB（リリースビルド）
+- メモリ使用量: 5 MB未満
+- CPU使用率: 最小限（イベント駆動）
 
-## Next Steps
+## 次のステップ
 
-See [AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md) for the roadmap to add MML playback functionality.
+MML再生機能を追加するロードマップについては[AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md)を参照してください。
