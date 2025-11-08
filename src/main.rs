@@ -12,7 +12,7 @@ use ratatui::{
 };
 use std::io::{self, Write};
 use std::process::{Command, Stdio};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tui_textarea::TextArea;
 
 fn main() -> Result<()> {
@@ -33,9 +33,7 @@ fn main() -> Result<()> {
     textarea.set_cursor_line_style(Style::default());
 
     // Playback state
-    let mut last_edit_time = Instant::now();
     let mut last_content = String::new();
-    let debounce_duration = Duration::from_millis(500);
 
     // Main event loop
     loop {
@@ -54,19 +52,16 @@ fn main() -> Result<()> {
 
                 // Pass key to textarea
                 textarea.input(key);
-                last_edit_time = Instant::now();
-            }
-        }
 
-        // Check if we should trigger playback (debounced)
-        if last_edit_time.elapsed() > debounce_duration {
-            let current_content = textarea.lines().join("\n");
-            if current_content != last_content && !current_content.trim().is_empty() {
-                // Check if content contains MML notes (cdefgab)
-                if contains_mml_notes(&current_content) {
-                    play_mml(&current_content);
+                // Trigger playback immediately on content change
+                let current_content = textarea.lines().join("\n");
+                if current_content != last_content && !current_content.trim().is_empty() {
+                    // Check if content contains MML notes (cdefgab)
+                    if contains_mml_notes(&current_content) {
+                        play_mml(&current_content);
+                    }
+                    last_content = current_content;
                 }
-                last_content = current_content;
             }
         }
     }
