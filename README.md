@@ -9,7 +9,7 @@ Rustで構築されたMusic Macro Language (MML)用のTUI（テキストユー�
 - ✅ 標準的なテキスト編集操作（挿入、削除、バックスペース）
 - ✅ クロスプラットフォーム対応（Windows、Linux、macOS）
 - ✅ ESCキーで終了
-- ⏳ リアルタイムMML再生（計画中 - [AUDIO_PLAYBACK_PLAN.md](AUDIO_PLAYBACK_PLAN.md)を参照）
+- ✅ MMLノート（cdefgab）入力時の自動再生（cat-play-mmlを子プロセスとして呼び出し）
 
 ## 使用技術
 
@@ -57,6 +57,15 @@ cargo run
 - **Backspace**: カーソル前の文字を削除
 - **Delete**: カーソル位置の文字を削除
 - **ESC**: エディタを終了
+
+### MML再生機能
+
+エディタは入力されたMMLコンテンツを自動的に再生します：
+
+- MMLノート（c, d, e, f, g, a, b）を含むテキストを入力すると、編集停止後500ms後に自動的に再生が開始されます
+- 再生には[cat-play-mml](https://github.com/cat2151/cat-play-mml)が子プロセスとして使用されます
+- cat-play-mmlがインストールされていない場合は、エディタは通常通り動作し、再生機能はスキップされます
+- MMLコンテンツは標準入力を通じてcat-play-mmlに渡されます
 
 ## 関連プロジェクト
 
