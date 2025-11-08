@@ -65,7 +65,7 @@ cargo run
 - MMLノート（c, d, e, f, g, a, b）を含むテキストを入力すると、即座に自動的に再生が開始されます
 - 再生には[cat-play-mml](https://github.com/cat2151/cat-play-mml)が子プロセスとして使用されます
 - cat-play-mmlがインストールされていない場合は、エディタは通常通り動作し、再生機能はスキップされます
-- MMLコンテンツは標準入力を通じてcat-play-mmlに渡されます
+- MMLコンテンツはコマンドライン引数としてcat-play-mmlに渡されます
 
 ## 関連プロジェクト
 

@@ -10,7 +10,7 @@ use ratatui::{
     widgets::{Block, Borders},
     Terminal,
 };
-use std::io::{self, Write};
+use std::io;
 use std::process::{Command, Stdio};
 use std::time::Duration;
 use tui_textarea::TextArea;
@@ -84,19 +84,14 @@ fn contains_mml_notes(content: &str) -> bool {
 
 /// Play MML content using cat-play-mml subprocess
 fn play_mml(content: &str) {
-    // Try to spawn cat-play-mml as a subprocess
+    // Try to spawn cat-play-mml as a subprocess with content as argument
     match Command::new("cat-play-mml")
-        .stdin(Stdio::piped())
+        .arg(content)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
     {
-        Ok(mut child) => {
-            // Write MML content to stdin
-            if let Some(mut stdin) = child.stdin.take() {
-                let _ = stdin.write_all(content.as_bytes());
-                let _ = stdin.flush();
-            }
+        Ok(_child) => {
             // Note: We don't wait for the child process to complete
             // It will run in the background
         }
