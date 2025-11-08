@@ -50,6 +50,25 @@ impl TerminalUi {
         self.textarea.lines().join("\n")
     }
 
+    /// テキストエリアのコンテンツを設定
+    pub fn set_content(&mut self, content: &str) {
+        // 全選択してカット
+        self.textarea.select_all();
+        self.textarea.cut();
+        
+        // 新しいコンテンツを挿入
+        self.textarea.insert_str(content);
+    }
+
+    /// テキストエリアのタイトルを設定  
+    pub fn set_title(&mut self, title: &str) {
+        // タイトル付きの新しいブロックを設定
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .title(title.to_string());
+        self.textarea.set_block(block);
+    }
+
     /// UIを描画する
     pub fn draw(&mut self) -> Result<()> {
         self.terminal.draw(|f| {

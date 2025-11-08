@@ -1,24 +1,33 @@
 use anyhow::Result;
-use crossterm::event::KeyEvent;
+use crossterm::event::{KeyEvent, KeyCode};
 use crate::ui::TerminalUi;
 use crate::mml::MmlProcessor;
 use crate::event::{EventHandler, EventResult};
+use crate::template::MmlTemplate;
 
 /// アプリケーションの状態を管理するメイン構造体
 pub struct App {
     ui: TerminalUi,
     previous_content: String,
+    template_index: usize,
 }
 
 impl App {
     /// 新しいAppインスタンスを作成する
     pub fn new() -> Result<Self> {
-        let ui = TerminalUi::new()?;
+        let mut ui = TerminalUi::new()?;
         let previous_content = String::new();
+        let template_index = 0;
+        
+        // 初期タイトルを設定
+        let title = format!("MML Editor - {} - Press ESC to exit, F2 for next template", 
+                           MmlTemplate::get_template_title(template_index));
+        ui.set_title(&title);
         
         Ok(Self {
             ui,
             previous_content,
+            template_index,
         })
     }
 
@@ -56,6 +65,11 @@ impl App {
             return EventResult::Exit;
         }
 
+        // F2キーでテンプレート切り替え
+        if key.code == KeyCode::F(2) {
+            return self.apply_next_template();
+        }
+
         // キーをテキストエリアに渡す
         self.ui.textarea_mut().input(key);
         EventResult::ContentChanged
@@ -74,5 +88,24 @@ impl App {
             
             self.previous_content = current_content;
         }
+    }
+
+    /// 次のテンプレートを適用する
+    fn apply_next_template(&mut self) -> EventResult {
+        // テンプレートインデックスを次に進める（循環）
+        self.template_index = (self.template_index + 1) % MmlTemplate::template_count();
+        
+        // 現在のテンプレートを取得
+        let template = MmlTemplate::get_template(self.template_index);
+        
+        // テキストエリアをクリアしてテンプレートを設定
+        self.ui.set_content(template);
+        
+        // テンプレートのタイトルを更新（UIに表示するため）
+        let title = format!("MML Editor - {} - Press ESC to exit, F2 for next template", 
+                           MmlTemplate::get_template_title(self.template_index));
+        self.ui.set_title(&title);
+        
+        EventResult::ContentChanged
     }
 }
