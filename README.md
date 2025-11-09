@@ -7,7 +7,6 @@ Rustで構築されたMusic Macro Language (MML)用のTUI（テキストユー�
 - ✅ シンタックスハイライト対応の複数行テキストエディタ
 - ✅ 完全なカーソル移動（矢印キー、Home、End、Page Up/Down）
 - ✅ 標準的なテキスト編集操作（挿入、削除、バックスペース）
-- ✅ クロスプラットフォーム対応（Windows、Linux、macOS）
 - ✅ ESCキーで終了
 - ✅ MMLノート（cdefgab）入力時の自動再生（cat-play-mmlを子プロセスとして呼び出し）
 - ✅ MMLテンプレート機能（F2キーで順番に切り替え）
@@ -66,6 +65,7 @@ cargo run
 
 - MMLノート（c, d, e, f, g, a, b）を含むテキストを入力すると、即座に自動的に再生が開始されます
 - 再生には[cat-play-mml](https://github.com/cat2151/cat-play-mml)が子プロセスとして使用されます
+  - Windows専用、音楽エンジンは Nuked-OPM です
 - cat-play-mmlがインストールされていない場合は、エディタは通常通り動作し、再生機能はスキップされます
 - MMLコンテンツはコマンドライン引数としてcat-play-mmlに渡されます
 
@@ -89,9 +89,14 @@ F2キーを押すごとに次のテンプレートに切り替わり、最後の
 ## 関連プロジェクト
 
 - [cat-play-mml](https://github.com/cat2151/cat-play-mml) - MMLパーサーとオーディオプレイヤー
-- [mmlabc-to-smf-rust](https://github.com/cat2151/mmlabc-to-smf-rust) - MMLからMIDIへのコンバーター
-- [smf-to-ym2151log-rust](https://github.com/cat2151/smf-to-ym2151log-rust) - MIDIからYM2151ログへのコンバーター
+  - サーバー・クライアントとしても動作
+  - Nuked-OPMエンジン利用
+  - Windows専用
+- [mmlabc-to-smf-rust](https://github.com/cat2151/mmlabc-to-smf-rust) - MMLからStandardMIDIファイルへのコンバーター
+- [smf-to-ym2151log-rust](https://github.com/cat2151/smf-to-ym2151log-rust) - StandardMIDIファイルからYM2151ログへのコンバーター
 - [ym2151-log-play-server](https://github.com/cat2151/ym2151-log-play-server) - YM2151オーディオプレイヤーのサーバー
+  - Nuked-OPMエンジン利用
+  - Windows専用
 
 ## 開発
 
