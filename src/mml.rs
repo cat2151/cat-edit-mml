@@ -1,9 +1,42 @@
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+/// cat-play-mmlのインストール試行済みフラグ
+static INSTALL_ATTEMPTED: AtomicBool = AtomicBool::new(false);
 
 /// MML関連の処理を担当するモジュール
 pub struct MmlProcessor;
 
 impl MmlProcessor {
+    /// cat-play-mmlがインストールされているかチェックする
+    fn is_cat_play_mml_installed() -> bool {
+        Command::new("cat-play-mml")
+            .arg("--version")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+            .is_ok()
+    }
+
+    /// cat-play-mmlを自動的にインストールする
+    fn install_cat_play_mml() {
+        // 既にインストール試行済みの場合は何もしない
+        if INSTALL_ATTEMPTED.swap(true, Ordering::SeqCst) {
+            return;
+        }
+
+        // cargo install --git でインストールを試みる
+        let _ = Command::new("cargo")
+            .args(&[
+                "install",
+                "--git",
+                "https://github.com/cat2151/cat-play-mml",
+            ])
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn();
+    }
+
     /// MML音符（c, d, e, f, g, a, b）が含まれているかチェックする
     pub fn contains_mml_notes(content: &str) -> bool {
         let lowercase = content.to_lowercase();
@@ -43,8 +76,12 @@ impl MmlProcessor {
                 // バックグラウンドで実行される
             }
             Err(_) => {
-                // cat-play-mmlが見つからないか起動に失敗
-                // 静かに無視する - エディタは動作し続ける
+                // cat-play-mmlが見つからない場合、インストールされているかチェック
+                if !Self::is_cat_play_mml_installed() {
+                    // インストールされていない場合、自動インストールを試みる
+                    Self::install_cat_play_mml();
+                }
+                // エディタは動作し続ける
             }
         }
     }
