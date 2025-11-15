@@ -1,4 +1,4 @@
-Last updated: 2025-11-12
+Last updated: 2025-11-16
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -201,6 +201,7 @@ Last updated: 2025-11-12
 - README.md
 - _config.yml
 - generated-docs/project-overview-generated-prompt.md
+- issue-notes/6.md
 - src/app.rs
 - src/event.rs
 - src/lib.rs
@@ -217,28 +218,27 @@ Last updated: 2025-11-12
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+33c85b9 Merge pull request #7 from cat2151/copilot/fix-chord-issue-c-e-g
+bbc0c01 Update README with playback mode documentation
+6aa8827 Implement playback mode toggle feature (Ctrl+P)
+6fa81b5 Initial plan
+0b7645f Add issue note for #6 [auto]
+c797cd9 Update project summaries (overview & development status) [auto]
 57a67e8 Update README to clarify MML syntax highlighting
 356ef84 Merge pull request #5 from cat2151/copilot/auto-install-cat-play-mml
 b230007 Merge branch 'main' into copilot/auto-install-cat-play-mml
 85e366e Clarify multi-line editor syntax highlighting support
-a9fa3d7 Update project summaries (overview & development status) [auto]
-750c7af README.mdの機能リストからクロスプラットフォーム対応を削除し、MML再生機能の説明を更新。関連プロジェクトの情報を整理。
-0a6928b github-actionsリポジトリの共通ワークフローを導入
-0da1a12 Add auto-installation of cat-play-mml and update README
-9f1b236 Initial plan
-b8d922a MMLテンプレートの説明を更新し、内容が仮であることを明記
 
 ### 変更されたファイル:
-.github/workflows/call-daily-project-summary.yml
-.github/workflows/call-issue-note.yml
-.github/workflows/call-translate-readme.yml
 README.md
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
+issue-notes/6.md
+src/app.rs
 src/mml.rs
 
 
 ---
-Generated at: 2025-11-12 07:07:57 JST
+Generated at: 2025-11-16 07:06:34 JST

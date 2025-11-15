@@ -1,50 +1,50 @@
-Last updated: 2025-11-12
+Last updated: 2025-11-16
 
 # Development Status
 
 ## 現在のIssues
-- 現在オープン中のIssueはありません。
-- プロジェクトは安定した状態にあり、新たな機能開発や既存機能の改善に注力できます。
-- 最近導入された共通ワークフローや自動インストール機能の検証が次の焦点です。
+- 現在、プロジェクトにはオープン中のIssueが存在しません。
+- 過去に報告された問題はすべて解決またはクローズされています。
+- プロジェクトは安定した状態にあり、次の機能開発や改善フェーズに進む準備が整っています。
 
 ## 次の一手候補
-1. GitHub Actions 共通ワークフローの動作確認と安定化 (新規タスク)
-   - 最初の小さな一歩: `call-daily-project-summary.yml`の最近の実行ログを確認し、成功しているか、期待する出力が`generated-docs/development-status.md`などに生成されているかを確認する。
+1. READMEの翻訳精度向上 (新規タスク)
+   - 最初の小さな一歩: `README.md`と`README.ja.md`の内容を比較し、最新の変更が日本語版に反映されているか、また翻訳の自然さをレビューする。
    - Agent実行プロンプト:
      ```
-     対象ファイル: .github/workflows/call-daily-project-summary.yml
-     
-     実行内容: `call-daily-project-summary.yml`ワークフローの最近の実行履歴を調査し、成功しているか、および期待される成果物（例: `generated-docs/development-status.md`, `generated-docs/project-overview.md`）が正しく生成されているかを分析してください。特に、エラーログや警告がないかを確認してください。
-     
-     確認事項: ワークフローのトリガー条件、依存関係、および生成されるファイルの最終更新日時と内容を、コミット履歴と比較して確認してください。
-     
-     期待する出力: ワークフローの実行状況、検出された問題点（あれば）、および生成された成果物の健全性に関する簡潔なレポートをmarkdown形式で出力してください。
+     対象ファイル: README.md, README.ja.md
+
+     実行内容: `README.md`の最新の内容が`README.ja.md`に正確かつ自然な日本語で反映されているかを確認し、改善点を特定してください。特に、最近追加された「playback mode」に関する記述が適切に翻訳されているかを重点的に確認します。
+
+     確認事項: `README.md`と`README.ja.md`の最終更新日時を比較し、翻訳プロセスが最近実行されたか確認します。翻訳ツールがどのようなものであるか（`.github/actions-tmp/.github_automation/translate/scripts/translate-readme.cjs`）も考慮に入れます。
+
+     期待する出力: `README.ja.md`の改善案をMarkdown形式で提案してください。具体的な修正箇所とその理由を含めます。必要であれば、翻訳スクリプトの改善についても触れてください。
      ```
 
-2. `cat-play-mml` 自動インストール機能の動作確認とドキュメント更新 (新規タスク)
-   - 最初の小さな一歩: `src/main.rs`および`Cargo.toml`内で`cat-play-mml`の自動インストールに関連するコード箇所を特定し、そのロジックを理解する。
+2. `project summaries`生成スクリプトのログ出力改善 (新規タスク)
+   - 最初の小さな一歩: `.github/actions-tmp/.github_automation/project_summary/scripts/`内の`ProjectSummaryCoordinator.cjs`や`generate-project-summary.cjs`などのスクリプトが生成するログを確認し、実行状況やエラーが分かりやすく記録されているか評価する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: src/main.rs, Cargo.toml, README.md
-     
-     実行内容: `cat-play-mml`の自動インストール機能がどのように実装されているかを`src/main.rs`と`Cargo.toml`から分析し、その機能が`README.md`に正確かつ網羅的に記述されているかを確認してください。特に、インストールがどのような条件下で行われるか、ユーザーが手動で設定する必要がある項目があるかを特定してください。
-     
-     確認事項: 自動インストールロジックが現在のプロジェクト構成とRustのエコシステムに合致しているか、および`README.md`の記述がユーザーにとって明確であるかを確認してください。
-     
-     期待する出力: `cat-play-mml`自動インストール機能の技術的な説明、`README.md`の記述に関する改善提案（具体的にどのセクションをどのように修正すべきか）、および確認すべきテストケース（自動インストールが成功するかなど）をmarkdown形式で出力してください。
+     対象ファイル: .github/actions-tmp/.github_automation/project_summary/scripts/ProjectSummaryCoordinator.cjs, .github/actions-tmp/.github_automation/project_summary/scripts/generate-project-summary.cjs
+
+     実行内容: `ProjectSummaryCoordinator.cjs` および関連スクリプト (`generate-project-summary.cjs` など) のログ出力メカニズムを分析し、デバッグやトラブルシューティングに役立つ情報が適切に出力されているか評価してください。特に、エラー発生時や重要な処理ステップにおいて、詳細な情報が記録されるかを確認します。
+
+     確認事項: 既存のログ出力のコードパターン、およびGitHub Actionsのワークフロー (`.github/actions-tmp/.github/workflows/daily-project-summary.yml`) でどのようにスクリプトが実行され、ログがキャプチャされるかを確認します。
+
+     期待する出力: 現在のログ出力の評価と、改善のための具体的な提案をMarkdown形式で記述してください。例えば、重要な変数の値の出力、処理時間の記録、特定のエラーコードのログなどを提案します。
      ```
 
-3. MML関連機能のユーザーガイドの充実 (新規タスク)
-   - 最初の小さな一歩: `README.md`内のMMLに関する記述と`src/mml.rs`の実装内容を比較し、情報の一貫性や不足している点がないかを確認する。特に、MMLテンプレートの説明が「仮」とされている点に注目する。
+3. `playback mode`機能のユニットテスト追加 (新規タスク)
+   - 最初の小さな一歩: `src/app.rs`や`src/mml.rs`に`playback mode`に関連するロジックを特定し、簡単なテストケースを考案する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: README.md, src/mml.rs
-     
-     実行内容: `README.md`内のMMLに関する説明（シンタックスハイライト、テンプレート、再生機能など）を`src/mml.rs`のコード実装と照らし合わせ、現在の機能との整合性、およびユーザーにとって分かりやすい情報の提供ができているかを分析してください。MMLテンプレートの「仮」という記述について、現状と矛盾がないか、あるいは具体的なテンプレート例を提供できるかを検討してください。
-     
-     確認事項: `README.md`のMML関連情報が散在していないか、MMLの利用方法が明確に伝わるか、そして最新のMML機能が網羅されているかを確認してください。
-     
-     期待する出力: `README.md`のMML関連セクションをより分かりやすく、かつ網羅的にするための具体的な改善提案をmarkdown形式で出力してください。提案には、記述の追加、修正、再構成、MMLテンプレートの具体的な例の提示などが含まれるべきです。
+     対象ファイル: src/app.rs, src/mml.rs
+
+     実行内容: 最近追加された`playback mode`機能 (`6aa8827 Implement playback mode toggle feature (Ctrl+P)`) のロジックを分析し、その主要な動作を検証するためのユニットテストの追加を検討してください。特に、モードの切り替え、再生状態の管理、MML解析への影響などをカバーするテストケースを特定します。
+
+     確認事項: 既存のRustプロジェクトにおけるテストフレームワーク（`#[test]`アノテーションなど）の使い方と、テストファイル(`src/lib.rs`や`src/main.rs`に関連するテストモジュール)の構造を確認します。`src/app.rs`や`src/mml.rs`内で`playback mode`に関連する関数や構造体を特定します。
+
+     期待する出力: `playback mode`機能の主要なコンポーネントをテストするための具体的なユニットテストコードの提案をMarkdown形式で記述してください。追加すべきテストケースと、そのテストコードの例（Rust言語）を含めます。
 
 ---
-Generated at: 2025-11-12 07:08:11 JST
+Generated at: 2025-11-16 07:07:02 JST
