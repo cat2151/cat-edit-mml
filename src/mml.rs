@@ -68,10 +68,24 @@ impl MmlProcessor {
                 .spawn()?;
         }
 
-        // サーバーが起動するまで少し待つ
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        // サーバーが起動するまでポーリングで待つ
+        // ベストプラクティス: 短い間隔でチェックし、起動したらすぐに次へ進む
+        const POLL_INTERVAL_MS: u64 = 100; // 100ミリ秒ごとにチェック
+        const MAX_WAIT_MS: u64 = 5000; // 最大5秒待つ
+        const MAX_ATTEMPTS: u64 = MAX_WAIT_MS / POLL_INTERVAL_MS;
         
-        eprintln!("✅ サーバーを起動しました");
+        for attempt in 1..=MAX_ATTEMPTS {
+            std::thread::sleep(std::time::Duration::from_millis(POLL_INTERVAL_MS));
+            
+            if Self::is_server_running() {
+                eprintln!("✅ サーバーを起動しました ({}ms後)", attempt * POLL_INTERVAL_MS);
+                return Ok(());
+            }
+        }
+        
+        // タイムアウト
+        eprintln!("⚠️  サーバーの起動確認がタイムアウトしました");
+        eprintln!("   サーバーは起動している可能性がありますが、確認できませんでした");
         Ok(())
     }
 
