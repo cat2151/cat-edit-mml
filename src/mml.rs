@@ -76,7 +76,7 @@ impl MmlProcessor {
             }
         };
 
-        // send_json()を使用（サイズに応じて自動的に最適な送信方法を選択）
+        // send_json()を使用（バイナリプロトコルで送信）
         if let Err(e) = client::send_json(&json) {
             eprintln!("⚠️  演奏エラー: {}", e);
             eprintln!("   サーバーが起動していない可能性があります");
