@@ -1,50 +1,50 @@
-Last updated: 2025-11-16
+Last updated: 2025-11-17
 
 # Development Status
 
 ## 現在のIssues
-- 現在、プロジェクトにはオープン中のIssueが存在しません。
-- 過去に報告された問題はすべて解決またはクローズされています。
-- プロジェクトは安定した状態にあり、次の機能開発や改善フェーズに進む準備が整っています。
+- 現在、オープン状態のIssueは存在しません。
+- 過去7日間で依存関係の更新、バイナリプロトコルへの対応、サーバー起動ロジックの改善など、多くの機能がマージされました。
+- 今後は、既存機能の安定化、ドキュメントの整備、およびCI/CDワークフローの最適化が次の焦点となります。
 
 ## 次の一手候補
-1. READMEの翻訳精度向上 (新規タスク)
-   - 最初の小さな一歩: `README.md`と`README.ja.md`の内容を比較し、最新の変更が日本語版に反映されているか、また翻訳の自然さをレビューする。
+1. プロジェクトサマリーの精度向上のため、開発状況生成プロンプトを改善する [Issue #None]
+   - 最初の小さな一歩: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` の内容を現在の開発状況生成ガイドラインと照らし合わせ、不足している点や改善可能な点を特定する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: README.md, README.ja.md
+     対象ファイル: .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md および このプロンプトファイル（開発状況生成プロンプト）
 
-     実行内容: `README.md`の最新の内容が`README.ja.md`に正確かつ自然な日本語で反映されているかを確認し、改善点を特定してください。特に、最近追加された「playback mode」に関する記述が適切に翻訳されているかを重点的に確認します。
+     実行内容: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` が、現在の「開発状況生成プロンプト（開発者向け）」の要件（生成するもの、生成しないもの、ガイドライン、出力フォーマット）を完全に満たしているか分析し、差異をmarkdown形式で出力してください。
 
-     確認事項: `README.md`と`README.ja.md`の最終更新日時を比較し、翻訳プロセスが最近実行されたか確認します。翻訳ツールがどのようなものであるか（`.github/actions-tmp/.github_automation/translate/scripts/translate-readme.cjs`）も考慮に入れます。
+     確認事項: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` がどのような文脈で使われているか、関連するスクリプト（.github/actions-tmp/.github_automation/project_summary/scripts/development/DevelopmentStatusGenerator.cjsなど）を確認してください。
 
-     期待する出力: `README.ja.md`の改善案をMarkdown形式で提案してください。具体的な修正箇所とその理由を含めます。必要であれば、翻訳スクリプトの改善についても触れてください。
+     期待する出力: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` の現状の課題点と、それを「開発状況生成プロンプト（開発者向け）」の要件に合わせるための具体的な改善提案をmarkdown形式で出力してください。
      ```
 
-2. `project summaries`生成スクリプトのログ出力改善 (新規タスク)
-   - 最初の小さな一歩: `.github/actions-tmp/.github_automation/project_summary/scripts/`内の`ProjectSummaryCoordinator.cjs`や`generate-project-summary.cjs`などのスクリプトが生成するログを確認し、実行状況やエラーが分かりやすく記録されているか評価する。
+2. GitHub Actionsワークフローの重複排除と整理 [Issue #None]
+   - 最初の小さな一歩: `.github/workflows/` と `.github/actions-tmp/.github/workflows/` ディレクトリ内のワークフローファイルを比較し、重複や冗長な部分を特定する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: .github/actions-tmp/.github_automation/project_summary/scripts/ProjectSummaryCoordinator.cjs, .github/actions-tmp/.github_automation/project_summary/scripts/generate-project-summary.cjs
+     対象ファイル: .github/workflows/ および .github/actions-tmp/.github/workflows/ ディレクトリ内のすべての.ymlファイル
 
-     実行内容: `ProjectSummaryCoordinator.cjs` および関連スクリプト (`generate-project-summary.cjs` など) のログ出力メカニズムを分析し、デバッグやトラブルシューティングに役立つ情報が適切に出力されているか評価してください。特に、エラー発生時や重要な処理ステップにおいて、詳細な情報が記録されるかを確認します。
+     実行内容: これらのディレクトリに存在するワークフローファイルをリストアップし、それぞれのファイルがどのような役割を担っているかを簡潔に説明してください。特に、名前が類似している (`call-daily-project-summary.yml` vs `daily-project-summary.yml`など) ファイルについては、その関係性や冗長性を分析し、整理の可能性を検討してください。
 
-     確認事項: 既存のログ出力のコードパターン、およびGitHub Actionsのワークフロー (`.github/actions-tmp/.github/workflows/daily-project-summary.yml`) でどのようにスクリプトが実行され、ログがキャプチャされるかを確認します。
+     確認事項: ワークフローが実際にどのように呼び出され、利用されているか（例: `on: workflow_call` や `uses: ` の記述）を確認し、変更が既存のCI/CDパイプラインに与える影響を考慮してください。
 
-     期待する出力: 現在のログ出力の評価と、改善のための具体的な提案をMarkdown形式で記述してください。例えば、重要な変数の値の出力、処理時間の記録、特定のエラーコードのログなどを提案します。
+     期待する出力: 重複または冗長である可能性のあるワークフローのリストと、それらをどのように統合または削除できるかについての初期提案をmarkdown形式で出力してください。
      ```
 
-3. `playback mode`機能のユニットテスト追加 (新規タスク)
-   - 最初の小さな一歩: `src/app.rs`や`src/mml.rs`に`playback mode`に関連するロジックを特定し、簡単なテストケースを考案する。
+3. 新規プロトコルおよびサーバー起動ロジックのドキュメント作成 [Issue #None]
+   - 最初の小さな一歩: `src/app.rs` と `src/mml.rs` の最近の変更をレビューし、バイナリプロトコルとサーバー起動に関する主要な変更点を特定する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: src/app.rs, src/mml.rs
+     対象ファイル: src/app.rs, src/mml.rs, README.md
 
-     実行内容: 最近追加された`playback mode`機能 (`6aa8827 Implement playback mode toggle feature (Ctrl+P)`) のロジックを分析し、その主要な動作を検証するためのユニットテストの追加を検討してください。特に、モードの切り替え、再生状態の管理、MML解析への影響などをカバーするテストケースを特定します。
+     実行内容: `src/app.rs` と `src/mml.rs` におけるバイナリプロトコルとサーバー起動（`ensure_server_ready()` 関連）の実装に関するコードを分析し、その概要と利用方法を抽出し、`README.md` に追記すべき内容を提案してください。
 
-     確認事項: 既存のRustプロジェクトにおけるテストフレームワーク（`#[test]`アノテーションなど）の使い方と、テストファイル(`src/lib.rs`や`src/main.rs`に関連するテストモジュール)の構造を確認します。`src/app.rs`や`src/mml.rs`内で`playback mode`に関連する関数や構造体を特定します。
+     確認事項: `ym2151-log-play-server` 依存関係がどのようにこれらの機能に影響しているかを確認してください。
 
-     期待する出力: `playback mode`機能の主要なコンポーネントをテストするための具体的なユニットテストコードの提案をMarkdown形式で記述してください。追加すべきテストケースと、そのテストコードの例（Rust言語）を含めます。
+     期待する出力: `README.md` に追記する形式で、バイナリプロトコルの概要、サーバー起動ロジック（`ensure_server_ready()` の使い方含む）についての説明をmarkdown形式で出力してください。
 
 ---
-Generated at: 2025-11-16 07:07:02 JST
+Generated at: 2025-11-17 07:07:24 JST

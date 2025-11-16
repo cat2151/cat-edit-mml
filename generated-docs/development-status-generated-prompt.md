@@ -1,4 +1,4 @@
-Last updated: 2025-11-16
+Last updated: 2025-11-17
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -201,7 +201,9 @@ Last updated: 2025-11-16
 - README.md
 - _config.yml
 - generated-docs/project-overview-generated-prompt.md
+- issue-notes/10.md
 - issue-notes/6.md
+- issue-notes/8.md
 - src/app.rs
 - src/event.rs
 - src/lib.rs
@@ -218,27 +220,30 @@ Last updated: 2025-11-16
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-33c85b9 Merge pull request #7 from cat2151/copilot/fix-chord-issue-c-e-g
-bbc0c01 Update README with playback mode documentation
-6aa8827 Implement playback mode toggle feature (Ctrl+P)
-6fa81b5 Initial plan
-0b7645f Add issue note for #6 [auto]
-c797cd9 Update project summaries (overview & development status) [auto]
-57a67e8 Update README to clarify MML syntax highlighting
-356ef84 Merge pull request #5 from cat2151/copilot/auto-install-cat-play-mml
-b230007 Merge branch 'main' into copilot/auto-install-cat-play-mml
-85e366e Clarify multi-line editor syntax highlighting support
+149b922 依存関係更新
+ccfa339 Merge pull request #11 from cat2151/copilot/update-protocol-for-binary
+5253263 Update to binary protocol in ym2151-log-play-server dependency
+27ad9a3 Add issue note for #10 [auto]
+2a54104 Initial plan
+ea91942 Merge pull request #9 from cat2151/copilot/enable-server-startup-new-specs
+ea7f490 Simplify server management using library's ensure_server_ready() function
+2cef36c Implement polling-based server startup with configurable timeout
+52e8a21 Update to use unified send_json() API instead of direct/file variants
+a176db4 Update issue notes with implementation details
 
 ### 変更されたファイル:
+Cargo.lock
+Cargo.toml
 README.md
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/6.md
+issue-notes/10.md
+issue-notes/8.md
 src/app.rs
 src/mml.rs
 
 
 ---
-Generated at: 2025-11-16 07:06:34 JST
+Generated at: 2025-11-17 07:07:01 JST
