@@ -1,13 +1,84 @@
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
+use anyhow::Result;
 
-/// cat-play-mmlのインストール試行済みフラグ
-static INSTALL_ATTEMPTED: AtomicBool = AtomicBool::new(false);
+// Windows専用のモジュール
+#[cfg(windows)]
+use mmlabc_to_smf::{pass1_parser, pass2_ast, pass3_events, pass4_midi};
+#[cfg(windows)]
+use smf_to_ym2151log::convert_smf_to_ym2151_log;
+#[cfg(windows)]
+use ym2151_log_play_server::client;
+
+/// サーバー起動試行済みフラグ
+static SERVER_STARTED: AtomicBool = AtomicBool::new(false);
+
+/// JSONサイズの制限（4KB） - Windows専用
+#[cfg(windows)]
+const JSON_SIZE_LIMIT: usize = 4096;
 
 /// MML関連の処理を担当するモジュール
 pub struct MmlProcessor;
 
 impl MmlProcessor {
+    /// サーバーが起動しているかチェックする（Windows専用）
+    #[cfg(windows)]
+    fn is_server_running() -> bool {
+        // stopコマンドを送ってみて接続できるかチェック
+        // サーバーが起動していればエラーにならない
+        client::stop_playback().is_ok()
+    }
+
+    /// サーバーが起動しているかチェックする（非Windows環境用スタブ）
+    #[cfg(not(windows))]
+    fn is_server_running() -> bool {
+        false
+    }
+
+    /// cat-play-mmlをサーバーモードで起動する
+    fn start_server() -> Result<()> {
+        // 既に起動試行済みの場合は何もしない
+        if SERVER_STARTED.swap(true, Ordering::SeqCst) {
+            return Ok(());
+        }
+
+        eprintln!("🚀 サーバーを起動中...");
+        
+        // cat-play-mmlがインストールされているかチェック
+        if !Self::is_cat_play_mml_installed() {
+            eprintln!("⚠️  cat-play-mmlがインストールされていません");
+            eprintln!("   以下のコマンドでインストールしてください:");
+            eprintln!("   cargo install --git https://github.com/cat2151/cat-play-mml");
+            return Err(anyhow::anyhow!("cat-play-mml not installed"));
+        }
+
+        // cat-play-mmlをサーバーモードで起動（デタッチ）
+        #[cfg(target_os = "windows")]
+        {
+            use std::os::windows::process::CommandExt;
+            const CREATE_NEW_PROCESS_GROUP: u32 = 0x00000200;
+            const DETACHED_PROCESS: u32 = 0x00000008;
+
+            Command::new("cat-play-mml")
+                .arg("--server")
+                .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
+                .spawn()?;
+        }
+
+        #[cfg(not(target_os = "windows"))]
+        {
+            Command::new("cat-play-mml")
+                .arg("--server")
+                .spawn()?;
+        }
+
+        // サーバーが起動するまで少し待つ
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        
+        eprintln!("✅ サーバーを起動しました");
+        Ok(())
+    }
+
     /// cat-play-mmlがインストールされているかチェックする
     fn is_cat_play_mml_installed() -> bool {
         Command::new("cat-play-mml")
@@ -18,23 +89,12 @@ impl MmlProcessor {
             .is_ok()
     }
 
-    /// cat-play-mmlを自動的にインストールする
-    fn install_cat_play_mml() {
-        // 既にインストール試行済みの場合は何もしない
-        if INSTALL_ATTEMPTED.swap(true, Ordering::SeqCst) {
-            return;
+    /// サーバーを初期化する（起動時に一度だけ呼ぶ）
+    pub fn ensure_server_running() -> Result<()> {
+        if !Self::is_server_running() {
+            Self::start_server()?;
         }
-
-        // cargo install --git でインストールを試みる
-        let _ = Command::new("cargo")
-            .args(&[
-                "install",
-                "--git",
-                "https://github.com/cat2151/cat-play-mml",
-            ])
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn();
+        Ok(())
     }
 
     /// MML音符（c, d, e, f, g, a, b）が含まれているかチェックする
@@ -62,28 +122,75 @@ impl MmlProcessor {
         }
     }
 
-    /// cat-play-mmlサブプロセスを使ってMMLコンテンツを再生する
+    /// MML文字列をYM2151 JSON形式に変換する（Windows専用）
+    #[cfg(windows)]
+    fn convert_mml_to_json(mml: &str) -> Result<String> {
+        // MML → SMF (4パスの統合)
+        let tokens = pass1_parser::parse_mml(mml);
+        let ast = pass2_ast::tokens_to_ast(&tokens);
+        let events = pass3_events::ast_to_events(&ast);
+        let smf_data = pass4_midi::events_to_midi(&events)?;
+
+        // SMF → YM2151ログ
+        let json = convert_smf_to_ym2151_log(&smf_data)?;
+        Ok(json)
+    }
+
+    /// MMLコンテンツを再生する（Windows専用）
+    #[cfg(windows)]
     pub fn play_mml(content: &str) {
-        // cat-play-mmlをサブプロセスとして起動し、コンテンツを引数として渡す
-        match Command::new("cat-play-mml")
-            .arg(content)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-        {
-            Ok(_child) => {
-                // 注意: 子プロセスの完了を待たない
-                // バックグラウンドで実行される
+        // MMLをJSON形式に変換
+        let json = match Self::convert_mml_to_json(content) {
+            Ok(j) => j,
+            Err(e) => {
+                eprintln!("⚠️  MML変換エラー: {}", e);
+                return;
             }
-            Err(_) => {
-                // cat-play-mmlが見つからない場合、インストールされているかチェック
-                if !Self::is_cat_play_mml_installed() {
-                    // インストールされていない場合、自動インストールを試みる
-                    Self::install_cat_play_mml();
+        };
+
+        // JSONサイズをチェックして適切なメソッドを選択
+        let result = if json.len() < JSON_SIZE_LIMIT {
+            // 4KB未満なら直接送信
+            client::send_json_direct(&json)
+        } else {
+            // 4KB以上ならファイル経由で送信
+            // 一時ファイルを作成
+            match Self::create_temp_json_file(&json) {
+                Ok(path) => client::send_json_via_file(&path),
+                Err(e) => {
+                    eprintln!("⚠️  一時ファイル作成エラー: {}", e);
+                    return;
                 }
-                // エディタは動作し続ける
             }
+        };
+
+        // エラーがあれば表示（サーバー未起動の可能性）
+        if let Err(e) = result {
+            eprintln!("⚠️  演奏エラー: {}", e);
+            eprintln!("   サーバーが起動していない可能性があります");
         }
+    }
+
+    /// MMLコンテンツを再生する（非Windows環境用スタブ）
+    #[cfg(not(windows))]
+    pub fn play_mml(_content: &str) {
+        // 非Windows環境では再生機能は利用できない
+        eprintln!("⚠️  音声再生はWindows専用機能です");
+    }
+
+    /// 一時JSONファイルを作成する（Windows専用）
+    #[cfg(windows)]
+    fn create_temp_json_file(json: &str) -> Result<String> {
+        use std::io::Write;
+        
+        // 一時ディレクトリにファイルを作成
+        let temp_dir = std::env::temp_dir();
+        let temp_path = temp_dir.join("cat_edit_mml_temp.json");
+        
+        let mut file = std::fs::File::create(&temp_path)?;
+        file.write_all(json.as_bytes())?;
+        
+        Ok(temp_path.to_string_lossy().to_string())
     }
 }
 
