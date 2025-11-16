@@ -13,10 +13,6 @@ use ym2151_log_play_server::client;
 /// サーバー起動試行済みフラグ
 static SERVER_STARTED: AtomicBool = AtomicBool::new(false);
 
-/// JSONサイズの制限（4KB） - Windows専用
-#[cfg(windows)]
-const JSON_SIZE_LIMIT: usize = 4096;
-
 /// MML関連の処理を担当するモジュール
 pub struct MmlProcessor;
 
@@ -148,24 +144,8 @@ impl MmlProcessor {
             }
         };
 
-        // JSONサイズをチェックして適切なメソッドを選択
-        let result = if json.len() < JSON_SIZE_LIMIT {
-            // 4KB未満なら直接送信
-            client::send_json_direct(&json)
-        } else {
-            // 4KB以上ならファイル経由で送信
-            // 一時ファイルを作成
-            match Self::create_temp_json_file(&json) {
-                Ok(path) => client::send_json_via_file(&path),
-                Err(e) => {
-                    eprintln!("⚠️  一時ファイル作成エラー: {}", e);
-                    return;
-                }
-            }
-        };
-
-        // エラーがあれば表示（サーバー未起動の可能性）
-        if let Err(e) = result {
+        // send_json()を使用（サイズに応じて自動的に最適な送信方法を選択）
+        if let Err(e) = client::send_json(&json) {
             eprintln!("⚠️  演奏エラー: {}", e);
             eprintln!("   サーバーが起動していない可能性があります");
         }
@@ -176,21 +156,6 @@ impl MmlProcessor {
     pub fn play_mml(_content: &str) {
         // 非Windows環境では再生機能は利用できない
         eprintln!("⚠️  音声再生はWindows専用機能です");
-    }
-
-    /// 一時JSONファイルを作成する（Windows専用）
-    #[cfg(windows)]
-    fn create_temp_json_file(json: &str) -> Result<String> {
-        use std::io::Write;
-        
-        // 一時ディレクトリにファイルを作成
-        let temp_dir = std::env::temp_dir();
-        let temp_path = temp_dir.join("cat_edit_mml_temp.json");
-        
-        let mut file = std::fs::File::create(&temp_path)?;
-        file.write_all(json.as_bytes())?;
-        
-        Ok(temp_path.to_string_lossy().to_string())
     }
 }
 
