@@ -1,5 +1,3 @@
-use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
 use anyhow::Result;
 
 // Windows専用のモジュール
@@ -10,100 +8,20 @@ use smf_to_ym2151log::convert_smf_to_ym2151_log;
 #[cfg(windows)]
 use ym2151_log_play_server::client;
 
-/// サーバー起動試行済みフラグ
-static SERVER_STARTED: AtomicBool = AtomicBool::new(false);
-
 /// MML関連の処理を担当するモジュール
 pub struct MmlProcessor;
 
 impl MmlProcessor {
-    /// サーバーが起動しているかチェックする（Windows専用）
-    #[cfg(windows)]
-    fn is_server_running() -> bool {
-        // stopコマンドを送ってみて接続できるかチェック
-        // サーバーが起動していればエラーにならない
-        client::stop_playback().is_ok()
-    }
-
-    /// サーバーが起動しているかチェックする（非Windows環境用スタブ）
-    #[cfg(not(windows))]
-    fn is_server_running() -> bool {
-        false
-    }
-
-    /// cat-play-mmlをサーバーモードで起動する
-    fn start_server() -> Result<()> {
-        // 既に起動試行済みの場合は何もしない
-        if SERVER_STARTED.swap(true, Ordering::SeqCst) {
-            return Ok(());
-        }
-
-        eprintln!("🚀 サーバーを起動中...");
-        
-        // cat-play-mmlがインストールされているかチェック
-        if !Self::is_cat_play_mml_installed() {
-            eprintln!("⚠️  cat-play-mmlがインストールされていません");
-            eprintln!("   以下のコマンドでインストールしてください:");
-            eprintln!("   cargo install --git https://github.com/cat2151/cat-play-mml");
-            return Err(anyhow::anyhow!("cat-play-mml not installed"));
-        }
-
-        // cat-play-mmlをサーバーモードで起動（デタッチ）
-        #[cfg(target_os = "windows")]
-        {
-            use std::os::windows::process::CommandExt;
-            const CREATE_NEW_PROCESS_GROUP: u32 = 0x00000200;
-            const DETACHED_PROCESS: u32 = 0x00000008;
-
-            Command::new("cat-play-mml")
-                .arg("--server")
-                .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
-                .spawn()?;
-        }
-
-        #[cfg(not(target_os = "windows"))]
-        {
-            Command::new("cat-play-mml")
-                .arg("--server")
-                .spawn()?;
-        }
-
-        // サーバーが起動するまでポーリングで待つ
-        // ベストプラクティス: 短い間隔でチェックし、起動したらすぐに次へ進む
-        const POLL_INTERVAL_MS: u64 = 100; // 100ミリ秒ごとにチェック
-        const MAX_WAIT_MS: u64 = 5000; // 最大5秒待つ
-        const MAX_ATTEMPTS: u64 = MAX_WAIT_MS / POLL_INTERVAL_MS;
-        
-        for attempt in 1..=MAX_ATTEMPTS {
-            std::thread::sleep(std::time::Duration::from_millis(POLL_INTERVAL_MS));
-            
-            if Self::is_server_running() {
-                eprintln!("✅ サーバーを起動しました ({}ms後)", attempt * POLL_INTERVAL_MS);
-                return Ok(());
-            }
-        }
-        
-        // タイムアウト
-        eprintln!("⚠️  サーバーの起動確認がタイムアウトしました");
-        eprintln!("   サーバーは起動している可能性がありますが、確認できませんでした");
-        Ok(())
-    }
-
-    /// cat-play-mmlがインストールされているかチェックする
-    fn is_cat_play_mml_installed() -> bool {
-        Command::new("cat-play-mml")
-            .arg("--version")
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .is_ok()
-    }
-
     /// サーバーを初期化する（起動時に一度だけ呼ぶ）
+    #[cfg(windows)]
     pub fn ensure_server_running() -> Result<()> {
-        if !Self::is_server_running() {
-            Self::start_server()?;
-        }
+        // ライブラリの関数1つでサーバー存在を保証
+        client::ensure_server_ready("cat-play-mml")
+    }
+
+    /// サーバーを初期化する（非Windows環境用スタブ）
+    #[cfg(not(windows))]
+    pub fn ensure_server_running() -> Result<()> {
         Ok(())
     }
 
