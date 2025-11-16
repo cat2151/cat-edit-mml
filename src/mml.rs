@@ -1,40 +1,28 @@
-use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
+use anyhow::Result;
 
-/// cat-play-mmlのインストール試行済みフラグ
-static INSTALL_ATTEMPTED: AtomicBool = AtomicBool::new(false);
+// Windows専用のモジュール
+#[cfg(windows)]
+use mmlabc_to_smf::{pass1_parser, pass2_ast, pass3_events, pass4_midi};
+#[cfg(windows)]
+use smf_to_ym2151log::convert_smf_to_ym2151_log;
+#[cfg(windows)]
+use ym2151_log_play_server::client;
 
 /// MML関連の処理を担当するモジュール
 pub struct MmlProcessor;
 
 impl MmlProcessor {
-    /// cat-play-mmlがインストールされているかチェックする
-    fn is_cat_play_mml_installed() -> bool {
-        Command::new("cat-play-mml")
-            .arg("--version")
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .is_ok()
+    /// サーバーを初期化する（起動時に一度だけ呼ぶ）
+    #[cfg(windows)]
+    pub fn ensure_server_running() -> Result<()> {
+        // ライブラリの関数1つでサーバー存在を保証
+        client::ensure_server_ready("cat-play-mml")
     }
 
-    /// cat-play-mmlを自動的にインストールする
-    fn install_cat_play_mml() {
-        // 既にインストール試行済みの場合は何もしない
-        if INSTALL_ATTEMPTED.swap(true, Ordering::SeqCst) {
-            return;
-        }
-
-        // cargo install --git でインストールを試みる
-        let _ = Command::new("cargo")
-            .args(&[
-                "install",
-                "--git",
-                "https://github.com/cat2151/cat-play-mml",
-            ])
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn();
+    /// サーバーを初期化する（非Windows環境用スタブ）
+    #[cfg(not(windows))]
+    pub fn ensure_server_running() -> Result<()> {
+        Ok(())
     }
 
     /// MML音符（c, d, e, f, g, a, b）が含まれているかチェックする
@@ -62,28 +50,44 @@ impl MmlProcessor {
         }
     }
 
-    /// cat-play-mmlサブプロセスを使ってMMLコンテンツを再生する
+    /// MML文字列をYM2151 JSON形式に変換する（Windows専用）
+    #[cfg(windows)]
+    fn convert_mml_to_json(mml: &str) -> Result<String> {
+        // MML → SMF (4パスの統合)
+        let tokens = pass1_parser::parse_mml(mml);
+        let ast = pass2_ast::tokens_to_ast(&tokens);
+        let events = pass3_events::ast_to_events(&ast);
+        let smf_data = pass4_midi::events_to_midi(&events)?;
+
+        // SMF → YM2151ログ
+        let json = convert_smf_to_ym2151_log(&smf_data)?;
+        Ok(json)
+    }
+
+    /// MMLコンテンツを再生する（Windows専用）
+    #[cfg(windows)]
     pub fn play_mml(content: &str) {
-        // cat-play-mmlをサブプロセスとして起動し、コンテンツを引数として渡す
-        match Command::new("cat-play-mml")
-            .arg(content)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-        {
-            Ok(_child) => {
-                // 注意: 子プロセスの完了を待たない
-                // バックグラウンドで実行される
+        // MMLをJSON形式に変換
+        let json = match Self::convert_mml_to_json(content) {
+            Ok(j) => j,
+            Err(e) => {
+                eprintln!("⚠️  MML変換エラー: {}", e);
+                return;
             }
-            Err(_) => {
-                // cat-play-mmlが見つからない場合、インストールされているかチェック
-                if !Self::is_cat_play_mml_installed() {
-                    // インストールされていない場合、自動インストールを試みる
-                    Self::install_cat_play_mml();
-                }
-                // エディタは動作し続ける
-            }
+        };
+
+        // send_json()を使用（サイズに応じて自動的に最適な送信方法を選択）
+        if let Err(e) = client::send_json(&json) {
+            eprintln!("⚠️  演奏エラー: {}", e);
+            eprintln!("   サーバーが起動していない可能性があります");
         }
+    }
+
+    /// MMLコンテンツを再生する（非Windows環境用スタブ）
+    #[cfg(not(windows))]
+    pub fn play_mml(_content: &str) {
+        // 非Windows環境では再生機能は利用できない
+        eprintln!("⚠️  音声再生はWindows専用機能です");
     }
 }
 

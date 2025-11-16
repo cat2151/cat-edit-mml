@@ -25,6 +25,9 @@ pub struct App {
 impl App {
     /// 新しいAppインスタンスを作成する
     pub fn new() -> Result<Self> {
+        // サーバーが起動していることを確認
+        MmlProcessor::ensure_server_running()?;
+        
         let mut ui = TerminalUi::new()?;
         let previous_content = String::new();
         let template_index = 0;
