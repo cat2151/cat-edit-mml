@@ -1,4 +1,4 @@
-Last updated: 2025-11-17
+Last updated: 2025-12-02
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -218,6 +218,7 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照してください
 📖 README.md
 📄 _config.yml
 📁 generated-docs/
+🌐 googled947dc864c270e07.html
 📁 issue-notes/
   📖 10.md
   📖 6.md
@@ -232,13 +233,16 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照してください
   📄 ui.rs
 
 ## ファイル詳細分析
-
+**googled947dc864c270e07.html** (1行, 53バイト)
+  - 関数: なし
+  - インポート: なし
 
 ## 関数呼び出し階層
 関数呼び出し階層を分析できませんでした
 
 ## プロジェクト構造（ファイル一覧）
 README.md
+googled947dc864c270e07.html
 issue-notes/10.md
 issue-notes/6.md
 issue-notes/8.md
@@ -253,4 +257,4 @@ issue-notes/8.md
 
 
 ---
-Generated at: 2025-11-17 07:07:01 JST
+Generated at: 2025-12-02 07:07:14 JST

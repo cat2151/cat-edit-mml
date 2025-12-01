@@ -1,4 +1,4 @@
-Last updated: 2025-11-17
+Last updated: 2025-12-02
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -161,6 +161,7 @@ Last updated: 2025-11-17
 - .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
+- .github/actions-tmp/googled947dc864c270e07.html
 - .github/actions-tmp/issue-notes/10.md
 - .github/actions-tmp/issue-notes/11.md
 - .github/actions-tmp/issue-notes/12.md
@@ -201,6 +202,7 @@ Last updated: 2025-11-17
 - README.md
 - _config.yml
 - generated-docs/project-overview-generated-prompt.md
+- googled947dc864c270e07.html
 - issue-notes/10.md
 - issue-notes/6.md
 - issue-notes/8.md
@@ -220,25 +222,18 @@ Last updated: 2025-11-17
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-149b922 依存関係更新
-ccfa339 Merge pull request #11 from cat2151/copilot/update-protocol-for-binary
-5253263 Update to binary protocol in ym2151-log-play-server dependency
-27ad9a3 Add issue note for #10 [auto]
-2a54104 Initial plan
-ea91942 Merge pull request #9 from cat2151/copilot/enable-server-startup-new-specs
-ea7f490 Simplify server management using library's ensure_server_ready() function
-2cef36c Implement polling-based server startup with configurable timeout
-52e8a21 Update to use unified send_json() API instead of direct/file variants
-a176db4 Update issue notes with implementation details
+c153c61 Google検索にindexさせる用
+b9df008 Google検索にindexさせる用
 
 ### 変更されたファイル:
 Cargo.lock
 Cargo.toml
-README.md
+_config.yml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
+googled947dc864c270e07.html
 issue-notes/10.md
 issue-notes/8.md
 src/app.rs
@@ -246,4 +241,4 @@ src/mml.rs
 
 
 ---
-Generated at: 2025-11-17 07:07:01 JST
+Generated at: 2025-12-02 07:07:14 JST
