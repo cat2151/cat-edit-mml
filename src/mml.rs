@@ -56,7 +56,7 @@ impl MmlProcessor {
         // MML → SMF (4パスの統合)
         let tokens = pass1_parser::parse_mml(mml);
         let ast = pass2_ast::tokens_to_ast(&tokens);
-        let events = pass3_events::ast_to_events(&ast);
+        let events = pass3_events::ast_to_events(&ast, false);
         let smf_data = pass4_midi::events_to_midi(&events)?;
 
         // SMF → YM2151ログ
