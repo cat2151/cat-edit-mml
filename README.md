@@ -25,7 +25,17 @@ Rustで構築されたMusic Macro Language (MML)用のTUI（テキストユー�
 - Rust 1.70以降
 - Cargo（Rustに付属）
 
-### ソースからのビルド
+### Cargoで直接インストール
+
+- 手軽です
+
+```
+cargo install --force --git https://github.com/cat2151/cat-edit-mml.git
+```
+
+### cloneしてソースからのビルド
+
+- cloneしたい人向け
 
 ```bash
 git clone https://github.com/cat2151/cat-edit-mml.git
