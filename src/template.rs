@@ -6,25 +6,18 @@ impl MmlTemplate {
     const TEMPLATES: &'static [&'static str] = &[
         // テンプレート1: 基本的なスケール
         "cdefgab",
-        
         // テンプレート2: Cメジャースケール（オクターブ付き）
         "c4d4e4f4g4a4b4>c4",
-        
         // テンプレート3: 基本的なメロディパターン
         "c4e4g4e4 c4e4g4e4 f4a4>c4<a4 g4b4>d4<b4",
-        
         // テンプレート4: ドレミの歌
         "c4d4e4c4 c4d4e4c4 e4f4g2 e4f4g2",
-        
         // テンプレート5: 簡単なコード進行（和音）
         "ceg4 fac4 gbd4 ceg4",
-        
         // テンプレート6: テンポ指定付きメロディ
         "t120 c8d8e8f8g8a8b8>c8 <b8a8g8f8e8d8c2",
-        
         // テンプレート7: マルチトラックの例
         "A o4 cdefgab>c\nB o3 c2e2g2c2",
-        
         // テンプレート8: 空のテンプレート
         "",
     ];
@@ -65,7 +58,7 @@ mod tests {
         // 有効なインデックスでテンプレートを取得
         assert_eq!(MmlTemplate::get_template(0), "cdefgab");
         assert_eq!(MmlTemplate::get_template(1), "c4d4e4f4g4a4b4>c4");
-        
+
         // 無効なインデックスは最初のテンプレートを返す
         let invalid_index = MmlTemplate::template_count() + 10;
         assert_eq!(MmlTemplate::get_template(invalid_index), "cdefgab");
