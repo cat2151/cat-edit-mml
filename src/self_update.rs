@@ -9,7 +9,7 @@ fn install_cmd() -> String {
 #[cfg(any(target_os = "windows", test))]
 pub(crate) fn update_bat_content() -> String {
     format!(
-        "@echo off\r\ntimeout /t 3 /nobreak >nul\r\n{cmd}\r\ndel \"%~f0\"\r\n",
+        "@echo off\r\ntimeout /t 5 /nobreak >nul\r\n{cmd}\r\ndel \"%~f0\"\r\n",
         cmd = install_cmd()
     )
 }
