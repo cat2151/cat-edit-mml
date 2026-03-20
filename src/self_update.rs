@@ -7,6 +7,11 @@ fn install_cmd() -> String {
 }
 
 #[cfg(any(target_os = "windows", test))]
+fn quote_cmd_arg(arg: &str) -> String {
+    format!(r#""{arg}""#)
+}
+
+#[cfg(any(target_os = "windows", test))]
 pub(crate) fn update_bat_content() -> String {
     format!(
         "@echo off\r\ntimeout /t 5 /nobreak >nul\r\n{cmd}\r\ndel \"%~f0\"\r\n",
@@ -37,8 +42,9 @@ pub fn run_self_update() -> anyhow::Result<bool> {
         let bat_str = bat_path
             .to_str()
             .ok_or_else(|| anyhow::anyhow!("temp bat path is not valid UTF-8"))?;
+        let quoted_bat = quote_cmd_arg(bat_str);
         Command::new("cmd")
-            .args(["/C", "start", "", bat_str])
+            .args(["/C", "start", "", &quoted_bat])
             .spawn()?;
 
         println!("Launching update script: {}", bat_path.display());
@@ -82,5 +88,11 @@ mod tests {
         let bat = update_bat_content();
         assert!(bat.contains("del"));
         assert!(bat.contains("%~f0"));
+    }
+
+    #[test]
+    fn quote_cmd_arg_wraps_path_in_double_quotes() {
+        let quoted = quote_cmd_arg(r"C:\Temp\foo&(bar)\update script.bat");
+        assert_eq!(quoted, r#""C:\Temp\foo&(bar)\update script.bat""#);
     }
 }
