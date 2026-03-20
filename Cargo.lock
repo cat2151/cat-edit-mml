@@ -166,7 +166,6 @@ dependencies = [
  "crossterm",
  "mmlabc-to-smf",
  "ratatui",
- "serde_json",
  "smf-to-ym2151log-rust",
  "tui-textarea",
  "ym2151-log-play-server",

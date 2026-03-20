@@ -59,6 +59,15 @@ cargo run
 ./target/release/cat-edit-mml
 ```
 
+更新を実行：
+
+```bash
+cat-edit-mml update
+```
+
+- Windowsでは一時的な `.bat` を使って self update を起動します
+- それ以外の環境では `cargo install --force --git https://github.com/cat2151/cat-edit-mml.git` をそのまま実行します
+
 ### キーボード操作
 
 - **矢印キー**: カーソル移動
