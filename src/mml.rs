@@ -124,10 +124,7 @@ mod tests {
         // 文字を追加
         assert_eq!(MmlProcessor::calculate_diff("cde", "cdefg"), "fg");
         assert_eq!(MmlProcessor::calculate_diff("", "abc"), "abc");
-        assert_eq!(
-            MmlProcessor::calculate_diff("hello", "hello world"),
-            " world"
-        );
+        assert_eq!(MmlProcessor::calculate_diff("hello", "hello world"), " world");
     }
 
     #[test]
