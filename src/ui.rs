@@ -55,7 +55,7 @@ impl TerminalUi {
         // 全選択してカット
         self.textarea.select_all();
         self.textarea.cut();
-        
+
         // 新しいコンテンツを挿入
         self.textarea.insert_str(content);
     }
