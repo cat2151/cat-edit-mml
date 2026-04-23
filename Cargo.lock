@@ -163,6 +163,8 @@ name = "cat-edit-mml"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "cat-self-update-lib",
+ "clap",
  "crossterm",
  "mmlabc-to-smf",
  "ratatui",
@@ -170,6 +172,11 @@ dependencies = [
  "tui-textarea",
  "ym2151-log-play-server",
 ]
+
+[[package]]
+name = "cat-self-update-lib"
+version = "0.1.0"
+source = "git+https://github.com/cat2151/cat-self-update?branch=main#52075f044b724a0b87ee562fd5c3a0c8924e56f9"
 
 [[package]]
 name = "cc"

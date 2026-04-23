@@ -1,69 +1,55 @@
-use std::process::Command;
+use anyhow::{bail, Result};
+use cat_self_update_lib::check_remote_commit;
 
-const GIT_URL: &str = "https://github.com/cat2151/cat-edit-mml.git";
+const REPO_OWNER: &str = "cat2151";
+const REPO_NAME: &str = "cat-edit-mml";
+const MAIN_BRANCH: &str = "main";
+const APP_BIN_NAMES: &[&str] = &["cat-edit-mml"];
 
-fn install_cmd() -> String {
-    format!("cargo install --force --git {GIT_URL}")
+const LOCAL_HASH: &str = env!("GIT_COMMIT_HASH");
+
+fn is_valid_sha1(s: &str) -> bool {
+    s.len() == 40 && s.chars().all(|c| c.is_ascii_hexdigit())
 }
 
-#[cfg(any(target_os = "windows", test))]
-fn quote_cmd_arg(arg: &str) -> String {
-    format!(r#""{arg}""#)
-}
-
-#[cfg(any(target_os = "windows", test))]
-pub(crate) fn update_bat_content() -> String {
-    format!(
-        "@echo off\r\ntimeout /t 5 /nobreak >nul\r\n{cmd}\r\ndel \"%~f0\"\r\n",
-        cmd = install_cmd()
-    )
-}
-
-pub fn run_self_update() -> anyhow::Result<bool> {
-    #[cfg(target_os = "windows")]
-    {
-        use std::io::Write;
-        use std::time::{SystemTime, UNIX_EPOCH};
-
-        let pid = std::process::id();
-        let ts = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map(|d| d.as_millis())
-            .unwrap_or(0);
-        let bat_path = std::env::temp_dir().join(format!("cat_edit_mml_update_{pid}_{ts}.bat"));
-        {
-            let mut file = std::fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&bat_path)?;
-            file.write_all(update_bat_content().as_bytes())?;
-        }
-
-        let bat_str = bat_path
-            .to_str()
-            .ok_or_else(|| anyhow::anyhow!("temp bat path is not valid UTF-8"))?;
-        let quoted_bat = quote_cmd_arg(bat_str);
-        Command::new("cmd")
-            .args(["/C", "start", "", &quoted_bat])
-            .spawn()?;
-
-        println!("Launching update script: {}", bat_path.display());
-        println!("The application will now exit so the file lock is released.");
-        return Ok(true);
+fn validate_check_hash(local_hash: &str) -> Result<&str> {
+    if local_hash == "unknown" || !is_valid_sha1(local_hash) {
+        bail!(
+            "このビルドでは commit hash を取得できないため `cat-edit-mml check` を実行できません。git clone した作業ツリーからビルドし直してください。"
+        );
     }
 
-    #[cfg(not(target_os = "windows"))]
-    {
-        let cmd = install_cmd();
-        println!("Running: {cmd}");
-        let status = Command::new("cargo")
-            .args(["install", "--force", "--git", GIT_URL])
-            .status()?;
-        if !status.success() {
-            anyhow::bail!("cargo install failed with status: {status}");
-        }
-        Ok(false)
-    }
+    Ok(local_hash)
+}
+
+pub fn run_update() -> Result<()> {
+    let (owner, repo, bins) = update_target();
+
+    println!("アップデートを開始します...");
+    cat_self_update_lib::self_update(owner, repo, bins)
+        .map_err(|e| anyhow::anyhow!("アップデート開始に失敗しました: {}", e))?;
+    println!(
+        "アップデートをバックグラウンドで開始しました。完了後に cat-edit-mml を再起動します。"
+    );
+
+    Ok(())
+}
+
+pub fn run_check() -> Result<()> {
+    let (owner, repo, branch, local_hash) = check_target();
+    let local_hash = validate_check_hash(local_hash)?;
+    let result = check_remote_commit(owner, repo, branch, local_hash)
+        .map_err(|e| anyhow::anyhow!("アップデート確認に失敗しました: {}", e))?;
+    println!("{result}");
+    Ok(())
+}
+
+fn update_target() -> (&'static str, &'static str, &'static [&'static str]) {
+    (REPO_OWNER, REPO_NAME, APP_BIN_NAMES)
+}
+
+fn check_target() -> (&'static str, &'static str, &'static str, &'static str) {
+    (REPO_OWNER, REPO_NAME, MAIN_BRANCH, LOCAL_HASH.trim())
 }
 
 #[cfg(test)]
@@ -71,28 +57,47 @@ mod tests {
     use super::*;
 
     #[test]
-    fn bat_content_contains_install_command() {
-        let bat = update_bat_content();
-        assert!(bat.contains("cargo install --force --git"));
-        assert!(bat.contains("cat-edit-mml.git"));
+    fn update_target_returns_expected_values() {
+        let (owner, repo, bins) = update_target();
+
+        assert_eq!(owner, "cat2151");
+        assert_eq!(repo, "cat-edit-mml");
+        assert_eq!(bins, &["cat-edit-mml"] as &[&str]);
     }
 
     #[test]
-    fn bat_content_has_delay() {
-        let bat = update_bat_content();
-        assert!(bat.contains("timeout"));
+    fn is_valid_sha1_accepts_40_hex_chars() {
+        assert!(is_valid_sha1("0123456789abcdef0123456789abcdef01234567"));
     }
 
     #[test]
-    fn bat_content_self_deletes() {
-        let bat = update_bat_content();
-        assert!(bat.contains("del"));
-        assert!(bat.contains("%~f0"));
+    fn is_valid_sha1_rejects_invalid_values() {
+        assert!(!is_valid_sha1("unknown"));
+        assert!(!is_valid_sha1("0123456789abcdef0123456789abcdef0123456z"));
+        assert!(!is_valid_sha1("0123456789abcdef"));
     }
 
     #[test]
-    fn quote_cmd_arg_wraps_path_in_double_quotes() {
-        let quoted = quote_cmd_arg(r"C:\Temp\foo&(bar)\update script.bat");
-        assert_eq!(quoted, r#""C:\Temp\foo&(bar)\update script.bat""#);
+    fn validate_check_hash_rejects_unknown() {
+        let err = validate_check_hash("unknown").unwrap_err();
+        assert!(err.to_string().contains(
+            "このビルドでは commit hash を取得できないため `cat-edit-mml check` を実行できません。"
+        ));
+    }
+
+    #[test]
+    fn validate_check_hash_accepts_valid_hash() {
+        let hash = "0123456789abcdef0123456789abcdef01234567";
+        assert_eq!(validate_check_hash(hash).unwrap(), hash);
+    }
+
+    #[test]
+    fn check_target_returns_expected_values() {
+        let (owner, repo, branch, local_hash) = check_target();
+
+        assert_eq!(owner, "cat2151");
+        assert_eq!(repo, "cat-edit-mml");
+        assert_eq!(branch, "main");
+        assert!(!local_hash.is_empty());
     }
 }

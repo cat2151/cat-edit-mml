@@ -1,16 +1,17 @@
 use anyhow::Result;
 use cat_edit_mml::app::App;
-use cat_edit_mml::self_update::run_self_update;
+use cat_edit_mml::cli::{parse_args, Command};
+use cat_edit_mml::self_update::{run_check, run_update};
 
 fn main() -> Result<()> {
-    if std::env::args().skip(1).next().as_deref() == Some("update") {
-        let should_exit = run_self_update()?;
-        if should_exit {
-            std::process::exit(0);
-        }
-        return Ok(());
-    }
+    let args = parse_args();
 
-    let mut app = App::new()?;
-    app.run()
+    match args.command {
+        Some(Command::Check) => run_check(),
+        Some(Command::Update) => run_update(),
+        None => {
+            let mut app = App::new()?;
+            app.run()
+        }
+    }
 }
